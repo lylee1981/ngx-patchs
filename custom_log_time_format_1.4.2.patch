@@ -1,0 +1,42 @@
+diff -uNr custom_log_time_format_patch_a/src/core/ngx_times.c custom_log_time_format_patch_b/src/core/ngx_times.c
+--- custom_log_time_format_patch_a/src/core/ngx_times.c	2013-07-17 20:51:22.000000000 +0800
++++ custom_log_time_format_patch_b/src/core/ngx_times.c	2013-09-18 10:55:46.000000000 +0800
+@@ -49,7 +49,7 @@
+ static u_char            cached_http_log_time[NGX_TIME_SLOTS]
+                                     [sizeof("28/Sep/1970:12:00:00 +0600")];
+ static u_char            cached_http_log_iso8601[NGX_TIME_SLOTS]
+-                                    [sizeof("1970-09-28T12:00:00+06:00")];
++                                    [sizeof("1970-09-28 12:00:00")];
+ 
+ 
+ static char  *week[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+@@ -62,7 +62,7 @@
+     ngx_cached_err_log_time.len = sizeof("1970/09/28 12:00:00") - 1;
+     ngx_cached_http_time.len = sizeof("Mon, 28 Sep 1970 06:00:00 GMT") - 1;
+     ngx_cached_http_log_time.len = sizeof("28/Sep/1970:12:00:00 +0600") - 1;
+-    ngx_cached_http_log_iso8601.len = sizeof("1970-09-28T12:00:00+06:00") - 1;
++    ngx_cached_http_log_iso8601.len = sizeof("1970-09-28 12:00:00") - 1;
+ 
+     ngx_cached_time = &cached_time[0];
+ 
+@@ -159,7 +159,7 @@
+ 
+     p3 = &cached_http_log_iso8601[slot][0];
+ 
+-    (void) ngx_sprintf(p3, "%4d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d",
++    (void) ngx_sprintf(p3, "%4d-%02d-%02d %02d:%02d:%02d",
+                        tm.ngx_tm_year, tm.ngx_tm_mon,
+                        tm.ngx_tm_mday, tm.ngx_tm_hour,
+                        tm.ngx_tm_min, tm.ngx_tm_sec,
+diff -uNr custom_log_time_format_patch_a/src/http/modules/ngx_http_log_module.c custom_log_time_format_patch_b/src/http/modules/ngx_http_log_module.c
+--- custom_log_time_format_patch_a/src/http/modules/ngx_http_log_module.c	2013-07-17 20:51:22.000000000 +0800
++++ custom_log_time_format_patch_b/src/http/modules/ngx_http_log_module.c	2013-09-18 10:55:46.000000000 +0800
+@@ -219,7 +219,7 @@
+     { ngx_string("pipe"), 1, ngx_http_log_pipe },
+     { ngx_string("time_local"), sizeof("28/Sep/1970:12:00:00 +0600") - 1,
+                           ngx_http_log_time },
+-    { ngx_string("time_iso8601"), sizeof("1970-09-28T12:00:00+06:00") - 1,
++    { ngx_string("time_iso8601"), sizeof("1970-09-28 12:00:00") - 1,
+                           ngx_http_log_iso8601 },
+     { ngx_string("msec"), NGX_TIME_T_LEN + 4, ngx_http_log_msec },
+     { ngx_string("request_time"), NGX_TIME_T_LEN + 4,
