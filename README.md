@@ -1,6 +1,8 @@
 ngx-patchs
 ==========
 
+所有压缩包基于nginx-1.4.2稳定版本
+
 nginx patch 集合。包括：工作中的修改、第三方patch等。
 
 list：
@@ -14,11 +16,11 @@ list：
    proxy_errors_log_upstream http_500 http_404;   //记录上游服务器返回的500 和 404错误
    
 
-3、xxx_upstream_tries 功能。第三方patch
+3、过载保护。第三方patch
 
 4、后端健康检查。第三方patch
 
-5、过载保护。第三方patch
+5、xxx_upstream_tries 功能。第三方patch
 
 6、自定义目录存储缓存。（代码开发中）
 
