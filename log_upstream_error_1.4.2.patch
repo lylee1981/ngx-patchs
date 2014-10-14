@@ -1,0 +1,45 @@
+diff -uNr log_upstream_error_patch_a/src/http/modules/ngx_http_proxy_module.c log_upstream_error_patch_b/src/http/modules/ngx_http_proxy_module.c
+--- log_upstream_error_patch_a/src/http/modules/ngx_http_proxy_module.c	2013-07-17 20:51:22.000000000 +0800
++++ log_upstream_error_patch_b/src/http/modules/ngx_http_proxy_module.c	2014-07-15 13:30:26.000000000 +0800
+@@ -473,6 +473,13 @@
+       NGX_HTTP_LOC_CONF_OFFSET,
+       offsetof(ngx_http_proxy_loc_conf_t, upstream.next_upstream),
+       &ngx_http_proxy_next_upstream_masks },
++	  
++	{ ngx_string("proxy_errors_log_upstream"),
++      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
++      ngx_conf_set_bitmask_slot,
++      NGX_HTTP_LOC_CONF_OFFSET,
++      offsetof(ngx_http_proxy_loc_conf_t, upstream.errors_log_upstream),
++      &ngx_http_proxy_next_upstream_masks },
+ 
+     { ngx_string("proxy_pass_header"),
+       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+diff -uNr log_upstream_error_patch_a/src/http/ngx_http_upstream.c log_upstream_error_patch_b/src/http/ngx_http_upstream.c
+--- log_upstream_error_patch_a/src/http/ngx_http_upstream.c	2013-07-17 20:51:22.000000000 +0800
++++ log_upstream_error_patch_b/src/http/ngx_http_upstream.c	2014-07-15 13:30:56.000000000 +0800
+@@ -1735,7 +1735,12 @@
+         if (status != un->status) {
+             continue;
+         }
+-
++		
++		if (u->conf->errors_log_upstream & un->mask) {
++    		ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
++    				"upstream:%d", status);
++    	}
++		
+         if (u->peer.tries > 1 && (u->conf->next_upstream & un->mask)) {
+             ngx_http_upstream_next(r, u, un->mask);
+             return NGX_OK;
+diff -uNr log_upstream_error_patch_a/src/http/ngx_http_upstream.h log_upstream_error_patch_b/src/http/ngx_http_upstream.h
+--- log_upstream_error_patch_a/src/http/ngx_http_upstream.h	2013-07-17 20:51:22.000000000 +0800
++++ log_upstream_error_patch_b/src/http/ngx_http_upstream.h	2013-09-18 10:55:46.000000000 +0800
+@@ -149,6 +149,7 @@
+ 
+     ngx_uint_t                       ignore_headers;
+     ngx_uint_t                       next_upstream;
++	ngx_uint_t                       errors_log_upstream;
+     ngx_uint_t                       store_access;
+     ngx_flag_t                       buffering;
+     ngx_flag_t                       pass_request_headers;
