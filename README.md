@@ -1,7 +1,7 @@
 ngx-patchs
 ==========
 
-所有压缩包基于nginx-1.4.2稳定版本
+所有patch包基于nginx-1.4.2稳定版本
 
 nginx patch 集合。包括：工作中的修改、第三方patch等。
 
